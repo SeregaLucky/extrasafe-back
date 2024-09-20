@@ -12,7 +12,7 @@ import { Server, Socket } from 'socket.io';
     origin: '*',
   },
 })
-export class AppGateway {
+export class SocketGateway {
   @WebSocketServer()
   server: Server;
 
@@ -26,15 +26,9 @@ export class AppGateway {
     console.log(`Client disconnect: ${client.id}`);
   }
 
-  /* Listening message */
-  @SubscribeMessage('message')
-  handleMessage(
-    @MessageBody() data: string,
-    @ConnectedSocket() client: Socket,
-  ): void {
-    console.log(`Connected from ${client.id}: ${data}`);
-
-    /* Send all clients message */
-    client.broadcast.emit('message', data);
+  @SubscribeMessage('join')
+  joinTheRoom(@MessageBody() room: string, @ConnectedSocket() socket: Socket) {
+    socket.join(room);
+    this.server.to('room id').emitWithAck('SubscribeMessage', 'peer id');
   }
 }
