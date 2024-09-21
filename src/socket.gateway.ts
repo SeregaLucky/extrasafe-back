@@ -27,8 +27,17 @@ export class SocketGateway {
   }
 
   @SubscribeMessage('join')
-  joinTheRoom(@MessageBody() room: string, @ConnectedSocket() socket: Socket) {
-    socket.join(room);
-    this.server.to('room id').emitWithAck('SubscribeMessage', 'peer id');
+  async joinTheRoom(
+    @MessageBody() peerId: string,
+    @ConnectedSocket() socket: Socket,
+  ) {
+    const roomId = 'room-id-1';
+    socket.join(roomId);
+
+    try {
+      await this.server.to(roomId).emitWithAck('subscribeToPeerId', peerId);
+    } catch (error) {
+      console.log('SubscribeMessage ERROR =>', error);
+    }
   }
 }
