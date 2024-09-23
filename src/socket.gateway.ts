@@ -28,16 +28,19 @@ export class SocketGateway {
 
   @SubscribeMessage('join')
   async joinTheRoom(
-    @MessageBody() peerId: string,
+    @MessageBody() data: { roomId: string; peerId: string | null },
     @ConnectedSocket() socket: Socket,
   ) {
-    const roomId = 'room-id-1';
+    const { roomId, peerId } = data;
+    console.log(111111, { roomId, peerId });
+
     socket.join(roomId);
 
     try {
-      await this.server.to(roomId).emitWithAck('subscribeToPeerId', peerId);
+      this.server.to(roomId).emit('subscribeToPeerId', peerId);
+      // await this.server.to(roomId).emitWithAck('subscribeToPeerId', peerId);
     } catch (error) {
-      console.log('SubscribeMessage ERROR =>', error);
+      console.log('subscribeToPeerId ERROR =>', error);
     }
   }
 }
