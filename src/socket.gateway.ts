@@ -32,13 +32,14 @@ export class SocketGateway {
     @ConnectedSocket() socket: Socket,
   ) {
     const { roomId, peerId } = data;
-    console.log(111111, { roomId, peerId });
+    // console.log(111111, { roomId, peerId });
 
     socket.join(roomId);
 
     try {
-      this.server.to(roomId).emit('subscribeToPeerId', peerId);
+      // this.server.to(roomId).emit('subscribeToPeerId', peerId);
       // await this.server.to(roomId).emitWithAck('subscribeToPeerId', peerId);
+      socket.to(roomId).emit('subscribeToPeerId', peerId);
     } catch (error) {
       console.log('subscribeToPeerId ERROR =>', error);
     }
